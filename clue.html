@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Location Message</title>
+    <style>
+        /* CSS for Styling */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+        }
+
+        #message-container {
+            padding: 20px;
+            border: 2px solid #333;
+            border-radius: 10px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            min-width: 300px;
+        }
+
+        #qr-message {
+            font-size: 1.8em;
+            color: #d9534f; /* Red color for emphasis */
+            font-weight: bold;
+            margin-top: 15px;
+            display: none; /* Hidden initially, JavaScript will show it */
+            padding: 10px;
+            border: 1px dashed #d9534f;
+            background-color: #f9eaea;
+        }
+
+        #reveal-button {
+            padding: 10px 20px;
+            font-size: 1.1em;
+            cursor: pointer;
+            background-color: #5cb85c; /* Green button */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        #reveal-button:hover {
+            background-color: #4cae4c;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="message-container">
+        <button id="reveal-button">Click to Reveal QR Location</button>
+
+        <p id="qr-message">
+            <strong>QR 2 is under the last bench</strong> 🕵️
+        </p>
+    </div>
+
+    <script>
+        /* JavaScript for Functionality */
+        document.addEventListener('DOMContentLoaded', () => {
+            const button = document.getElementById('reveal-button');
+            const message = document.getElementById('qr-message');
+
+            // Add an event listener to the button
+            button.addEventListener('click', () => {
+                // Toggle the display property to show the message
+                if (message.style.display === 'none' || message.style.display === '') {
+                    message.style.display = 'block';
+                    button.textContent = 'Message Revealed!';
+                    button.disabled = true; // Optional: Disable button after first click
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
