@@ -1,86 +1,246 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Location Message</title>
-    <style>
-        /* CSS for Styling */
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            background-color: #f4f4f9;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QR Location Message</title>
 
-        #message-container {
-            padding: 20px;
-            border: 2px solid #333;
-            border-radius: 10px;
-            background-color: #fff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            min-width: 300px;
-        }
+  <style>
+    /* ===== Global ===== */
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+    * { box-sizing: border-box; }
 
-        #qr-message {
-            font-size: 1.8em;
-            color: #d9534f; /* Red color for emphasis */
-            font-weight: bold;
-            margin-top: 15px;
-            display: none; /* Hidden initially, JavaScript will show it */
-            padding: 10px;
-            border: 1px dashed #d9534f;
-            background-color: #f9eaea;
-        }
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+      background: linear-gradient(135deg, #1e1e2f, #252547, #1e1e2f);
+      background-size: 400% 400%;
+      animation: bgShift 12s ease-in-out infinite;
+    }
 
-        #reveal-button {
-            padding: 10px 20px;
-            font-size: 1.1em;
-            cursor: pointer;
-            background-color: #5cb85c; /* Green button */
-            color: white;
-            border: none;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-        }
+    @keyframes bgShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
 
-        #reveal-button:hover {
-            background-color: #4cae4c;
-        }
-    </style>
+    /* ===== Neon Floating Orbs ===== */
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.4;
+      animation: floatOrb 10s infinite ease-in-out alternate;
+    }
+
+    .orb:nth-child(1) { width: 350px; height: 350px; background: #ff4b2b; top: 5%; left: 15%; animation-delay: 0s; }
+    .orb:nth-child(2) { width: 400px; height: 400px; background: #00c9ff; bottom: 10%; right: 10%; animation-delay: 2s; }
+    .orb:nth-child(3) { width: 250px; height: 250px; background: #fbc2eb; bottom: 20%; left: 25%; animation-delay: 4s; }
+
+    @keyframes floatOrb {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-50px) scale(1.1); }
+    }
+
+    /* ===== Card ===== */
+    #message-container {
+      position: relative;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 50px;
+      border-radius: 25px;
+      text-align: center;
+      box-shadow: 0 0 50px rgba(255, 75, 43, 0.4), 0 0 80px rgba(0, 200, 255, 0.3);
+      backdrop-filter: blur(15px);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      animation: zoomIn 1s ease-out;
+      z-index: 5;
+    }
+
+    @keyframes zoomIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    /* ===== Button ===== */
+    #reveal-button {
+      font-size: 1.3em;
+      font-weight: 600;
+      padding: 15px 45px;
+      border: none;
+      border-radius: 50px;
+      color: #fff;
+      cursor: pointer;
+      background: linear-gradient(90deg, #ff416c, #ff4b2b, #ff416c);
+      background-size: 300%;
+      box-shadow: 0 0 20px rgba(255, 75, 43, 0.7);
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+      animation: buttonGlow 2.5s infinite alternate;
+    }
+
+    @keyframes buttonGlow {
+      0% { box-shadow: 0 0 15px #ff416c; transform: scale(1); }
+      100% { box-shadow: 0 0 40px #ff416c; transform: scale(1.07); }
+    }
+
+    #reveal-button:hover {
+      background-position: 100%;
+      transform: scale(1.1);
+      box-shadow: 0 0 30px #ff416c;
+    }
+
+    #reveal-button:disabled {
+      background: linear-gradient(90deg, #00c9ff, #92fe9d);
+      box-shadow: 0 0 30px #00c9ff;
+      animation: none;
+      transform: scale(1);
+    }
+
+    /* ===== Particle Burst ===== */
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 0.8;
+      animation: burst 1.2s ease-out forwards;
+    }
+
+    @keyframes burst {
+      0% { transform: scale(0) translate(0, 0); opacity: 1; }
+      100% { transform: scale(2) translate(var(--x), var(--y)); opacity: 0; }
+    }
+
+    /* ===== Message Reveal ===== */
+    #qr-message {
+      font-size: 1.7em;
+      color: #fff;
+      font-weight: 700;
+      margin-top: 30px;
+      padding: 25px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 15px;
+      display: none;
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 0 25px rgba(255, 75, 43, 0.5);
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Typing Animation */
+    .typing {
+      border-right: 3px solid #ff416c;
+      white-space: nowrap;
+      overflow: hidden;
+      width: 0;
+      animation: typing 3s steps(40, end) forwards, blink 0.7s infinite;
+    }
+
+    @keyframes typing {
+      from { width: 0; }
+      to { width: 100%; }
+    }
+
+    @keyframes blink {
+      50% { border-color: transparent; }
+    }
+
+    /* Floating particle layer */
+    .floating-particles::before, .floating-particles::after {
+      content: '';
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      top: -50%;
+      left: -50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.2) 2px, transparent 2px);
+      background-size: 40px 40px;
+      animation: moveParticles 20s linear infinite;
+      opacity: 0.15;
+    }
+
+    .floating-particles::after {
+      animation-delay: 10s;
+      background-size: 60px 60px;
+    }
+
+    @keyframes moveParticles {
+      from { transform: translate(0, 0) rotate(0deg); }
+      to { transform: translate(50px, 50px) rotate(360deg); }
+    }
+  </style>
 </head>
-<body>
 
-    <div id="message-container">
-        <button id="reveal-button">Click to Reveal QR Location</button>
+<body class="floating-particles">
+  <!-- Glowing Background Orbs -->
+  <div class="orb"></div>
+  <div class="orb"></div>
+  <div class="orb"></div>
 
-        <p id="qr-message">
-            <strong>QR 2 is under the last bench</strong> 🕵️
-        </p>
-    </div>
+  <div id="message-container">
+    <button id="reveal-button">✨ Reveal QR Location ✨</button>
+    <p id="qr-message"><span id="text"></span></p>
+  </div>
 
-    <script>
-        /* JavaScript for Functionality */
-        document.addEventListener('DOMContentLoaded', () => {
-            const button = document.getElementById('reveal-button');
-            const message = document.getElementById('qr-message');
+  <script>
+    const button = document.getElementById('reveal-button');
+    const message = document.getElementById('qr-message');
+    const text = document.getElementById('text');
+    const revealText = "QR 2 is under the last bench! 🕵️‍♂️";
 
-            // Add an event listener to the button
-            button.addEventListener('click', () => {
-                // Toggle the display property to show the message
-                if (message.style.display === 'none' || message.style.display === '') {
-                    message.style.display = 'block';
-                    button.textContent = 'Message Revealed!';
-                    button.disabled = true; // Optional: Disable button after first click
-                }
-            });
-        });
-    </script>
+    button.addEventListener('click', (e) => {
+      if (message.style.display === 'none' || message.style.display === '') {
+        message.style.display = 'block';
+        button.disabled = true;
+        button.textContent = '🎉 Message Revealed!';
+        createParticles(e.clientX, e.clientY);
+        typeWriter();
+      }
+    });
 
+    function typeWriter() {
+      text.classList.add('typing');
+      let i = 0;
+      const speed = 70;
+      function typing() {
+        if (i < revealText.length) {
+          text.textContent += revealText.charAt(i);
+          i++;
+          setTimeout(typing, speed);
+        } else {
+          text.classList.remove('typing');
+        }
+      }
+      typing();
+    }
+
+    function createParticles(x, y) {
+      for (let i = 0; i < 30; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+        document.body.appendChild(particle);
+
+        const size = Math.random() * 10 + 5;
+        const hue = Math.random() * 360;
+        const offsetX = (Math.random() - 0.5) * 400 + 'px';
+        const offsetY = (Math.random() - 0.5) * 400 + 'px';
+
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.background = `hsl(${hue}, 80%, 60%)`;
+        particle.style.left = x + 'px';
+        particle.style.top = y + 'px';
+        particle.style.setProperty('--x', offsetX);
+        particle.style.setProperty('--y', offsetY);
+
+        setTimeout(() => particle.remove(), 1200);
+      }
+    }
+  </script>
 </body>
 </html>
